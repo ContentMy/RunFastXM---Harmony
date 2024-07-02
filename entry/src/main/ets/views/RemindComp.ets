@@ -8,6 +8,7 @@ import { RemindDialog } from '../dialogs/RemindDialog'
 import reminderAgentManager from '@ohos.reminderAgentManager';
 import { BusinessError } from '@kit.BasicServicesKit'
 import { notificationManager } from '@kit.NotificationKit'
+import {routerManager} from '../common/utils/RouterManager'
 
 @Component
 @Preview
@@ -144,14 +145,10 @@ export struct RemindComp{
             .height(50)
             .padding(10)
             .onClick(()=>{
-              router.pushUrl({
-                url: 'pages/remind/RemindCompleted' // 目标url
-              }, router.RouterMode.Standard, (err) => {
-                if (err) {
-                  console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-                  return;
-                }
-                console.info('Invoke pushUrl succeeded.')
+              routerManager.jumpPage(CommonConstants.REMIND_COMPLETED_PAGE_PATH,()=>{
+                logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+              },(err:BusinessError)=>{
+                logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + err)
               })
             })
         }
@@ -187,17 +184,10 @@ export struct RemindComp{
                 .shadow({radius:10,color:$r('app.color.colorGray'),offsetX:5,offsetY:5})
                 .margin({left:10,right:10})
                 .onClick(()=>{
-                  router.pushUrl({
-                    url: 'pages/remind/RemindDetail',
-                    params:{
-                      data:item
-                    }// 目标url
-                  }, router.RouterMode.Standard, (err) => {
-                    if (err) {
-                      console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-                      return;
-                    }
-                    console.info('Invoke pushUrl succeeded.')
+                  routerManager.jumpPageWithParams(CommonConstants.REMIND_DETAIL_PAGE_PATH,item,()=>{
+                    logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+                  },(error:BusinessError)=>{
+                    logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
                   })
                 })
               }

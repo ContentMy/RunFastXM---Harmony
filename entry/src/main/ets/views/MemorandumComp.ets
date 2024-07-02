@@ -1,12 +1,12 @@
 
-import router from '@ohos.router'
 import { CommonConstants } from '../common/constants/CommonConstants';
 import MemorandumData from '../common/database/data/MemorandumData';
 import MemorandumDataWithImg from '../common/database/data/MemorandumDataWithImg';
 import MemorandumTable from '../common/database/tables/MemorandumTable';
 import { logger } from '../common/utils/logger';
 import { PageEventBus } from '../common/utils/PageEventBus';
-import { systemDateTime } from '@kit.BasicServicesKit';
+import { BusinessError, systemDateTime } from '@kit.BasicServicesKit';
+import { routerManager } from '../common/utils/RouterManager';
 
 @Component
 @Preview
@@ -64,14 +64,10 @@ export struct MemorandumComp{
           .padding(10)
           .borderRadius(6)
           .onClick((event:ClickEvent)=>{
-            router.pushUrl({
-              url: 'pages/memorandum/MemorandumCreate' // 目标url
-            }, router.RouterMode.Standard, (err) => {
-              if (err) {
-                console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-                return;
-              }
-              console.info('Invoke pushUrl succeeded.')
+            routerManager.jumpPage(CommonConstants.MEMORANDUM_CREATE_PAGE_PATH,()=>{
+              logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+            },(error:BusinessError)=>{
+              logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
             })
           })
 
@@ -165,17 +161,10 @@ export struct MemorandumComp{
                         this.isShowDelete = false;
                         return
                       }
-                      router.pushUrl({
-                        url: 'pages/memorandum/MemorandumDetail', // 目标url
-                        params: {
-                          data: item
-                        }
-                      }, router.RouterMode.Standard, (err) => {
-                        if (err) {
-                          console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-                          return;
-                        }
-                        console.info('Invoke pushUrl succeeded.')
+                      routerManager.jumpPageWithParams(CommonConstants.MEMORANDUM_DETAIL_PAGE_PATH,item,()=>{
+                        logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+                      },(error:BusinessError)=>{
+                        logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
                       })
                     })
                     .onTouch((event: TouchEvent) =>{//通过触摸事件处理长按

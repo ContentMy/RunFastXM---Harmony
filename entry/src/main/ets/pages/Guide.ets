@@ -1,4 +1,8 @@
-import router from '@ohos.router'
+import { CommonConstants } from '../common/constants/CommonConstants'
+import { logger } from '../common/utils/logger'
+import { routerManager } from '../common/utils/RouterManager'
+import { BusinessError } from '@kit.BasicServicesKit'
+
 @Entry
 @Component
 @Preview
@@ -90,10 +94,11 @@ struct Guide {
           .borderRadius(10)
           .onClick(()=>{
             //to Index
-            router.replaceUrl({ url: 'pages/Index' })
-              .catch((err: Error) => {
-                console.error(JSON.stringify(err));
-              })
+            routerManager.replacePage(CommonConstants.MAIN_PAGE_PATH,()=>{
+              logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+            },(error:BusinessError)=>{
+              logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
+            })
           })
       }
       .width('100%')

@@ -11,6 +11,20 @@ export class CommonConstants {
   static readonly EMPTY_STRING: string = '';
 
   /**
+   * page path
+   */
+  static readonly REMIND_COMPLETED_PAGE_PATH = 'pages/remind/RemindCompleted'
+  static readonly REMIND_DETAIL_PAGE_PATH = 'pages/remind/RemindDetail'
+  static readonly TARGET_CREATE_PAGE_PATH = 'pages/target/TargetCreate'
+  static readonly MEMORANDUM_CREATE_PAGE_PATH = 'pages/memorandum/MemorandumCreate'
+  static readonly MEMORANDUM_DETAIL_PAGE_PATH = 'pages/memorandum/MemorandumDetail'
+  static readonly USER_ABOUT_PAGE_PATH = 'pages/user/UserAbout'
+  static readonly USER_PRIVACY_PAGE_PATH = 'pages/user/UserPrivacy'
+
+  static readonly SPLASH_PAGE_PATH = 'pages/Splash'
+  static readonly GUIDE_PAGE_PATH = 'pages/Guide'
+  static readonly MAIN_PAGE_PATH = 'pages/Index'
+  /**
    * Log tag.
    */
   static readonly RUN_FAST_XM_DB_TAG = '[Debug.run.fast.xm]';

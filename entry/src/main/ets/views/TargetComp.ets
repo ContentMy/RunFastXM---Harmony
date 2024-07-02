@@ -1,4 +1,3 @@
-import router from '@ohos.router'
 import promptAction from '@ohos.promptAction'
 import TargetCheckInData from '../common/database/data/TargetCheckInData'
 import TargetData from '../common/database/data/TargetData'
@@ -9,6 +8,8 @@ import { logger } from '../common/utils/logger'
 import { CommonConstants } from '../common/constants/CommonConstants'
 import TargetDataWithCheckIn from '../common/database/data/TargetDataWithCheckIn'
 import { JSON } from '@kit.ArkTS'
+import {routerManager} from '../common/utils/RouterManager'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Component
 @Preview
@@ -152,17 +153,10 @@ export struct TargetComp{
                 .shadow({radius:10,color:$r('app.color.colorGray'),offsetX:5,offsetY:5})
                 .margin({left:10,right:10})
                 .onClick(()=>{
-                  router.pushUrl({
-                    url: 'pages/target/TargetCreate', // 目标url
-                    params: {
-                      data: item.targetData
-                    }
-                  }, router.RouterMode.Standard, (err) => {
-                    if (err) {
-                      console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-                      return;
-                    }
-                    console.info('Invoke pushUrl succeeded.')
+                  routerManager.jumpPageWithParams(CommonConstants.TARGET_CREATE_PAGE_PATH,item.targetData,()=>{
+                    logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+                  },(error:BusinessError)=>{
+                    logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
                   })
                 })
               }
@@ -192,14 +186,10 @@ export struct TargetComp{
       }.width(55).height(55).backgroundColor($r('app.color.colorGreen')).margin(10)
       .shadow({radius:10,color:$r('app.color.colorGray'),offsetX:2,offsetY:2})
       .onClick((event:ClickEvent)=>{
-        router.pushUrl({
-          url: 'pages/target/TargetCreate' // 目标url
-        }, router.RouterMode.Standard, (err) => {
-          if (err) {
-            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-            return;
-          }
-          console.info('Invoke pushUrl succeeded.')
+        routerManager.jumpPage(CommonConstants.TARGET_CREATE_PAGE_PATH,()=>{
+          logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+        },(error:BusinessError)=>{
+          logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
         })
       })
     }.width('100%')//宽度占满屏幕

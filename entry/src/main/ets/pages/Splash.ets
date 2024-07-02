@@ -1,9 +1,12 @@
-import router from '@ohos.router';
+import { CommonConstants } from '../common/constants/CommonConstants';
 import MemorandumImgTable from '../common/database/tables/MemorandumImgTable';
 import MemorandumTable from '../common/database/tables/MemorandumTable';
 import RemindTable from '../common/database/tables/RemindTable';
 import TargetCheckInTable from '../common/database/tables/TargetCheckInTable';
 import TargetTable from '../common/database/tables/TargetTable';
+import { routerManager } from '../common/utils/RouterManager';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../common/utils/logger';
 
 @Entry
 @Component
@@ -19,10 +22,11 @@ struct Guide {
 
   aboutToAppear() {//在此回调中添加定时器，2s后进入下一个页面
     this.timeOutId = setTimeout(() => {
-      router.replaceUrl({ url: 'pages/Guide' })
-        .catch((err: Error) => {
-          console.error(JSON.stringify(err));
-        })
+      routerManager.replacePage(CommonConstants.GUIDE_PAGE_PATH,()=>{
+        logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+      },(error:BusinessError)=>{
+        logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
+      })
     }, 2000);
   }
 

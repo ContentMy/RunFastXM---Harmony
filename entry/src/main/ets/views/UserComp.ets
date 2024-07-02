@@ -1,4 +1,9 @@
 import router from '@ohos.router';
+import { CommonConstants } from '../common/constants/CommonConstants';
+import { routerManager } from '../common/utils/RouterManager';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../common/utils/logger';
+
 @Component
 @Preview
 export struct UserComp{
@@ -52,14 +57,10 @@ export struct UserComp{
           // + '\n  x:' + event.x + '\n  y:' + event.y + '\ntarget:' + '\n  component globalPos:('
           // + event.target.area.globalPosition.x + ',' + event.target.area.globalPosition.y + ')\n  width:'
           // + event.target.area.width + '\n  height:' + event.target.area.height + '\ntimestamp' + event.timestamp;
-          router.pushUrl({
-            url: 'pages/user/UserAbout' // 目标url
-          }, router.RouterMode.Standard, (err) => {
-            if (err) {
-              console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-              return;
-            }
-            console.info('Invoke pushUrl succeeded.')
+          routerManager.jumpPage(CommonConstants.USER_ABOUT_PAGE_PATH,()=>{
+            logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+          },(error:BusinessError)=>{
+            logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
           })
         })
 
@@ -76,14 +77,10 @@ export struct UserComp{
         .height(50)
         .margin({top:10})
         .onClick((event:ClickEvent)=>{
-          router.pushUrl({
-            url: 'pages/user/UserPrivacy' // 目标url
-          }, router.RouterMode.Standard, (err) => {
-            if (err) {
-              console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-              return;
-            }
-            console.info('Invoke pushUrl succeeded.')
+          routerManager.jumpPage(CommonConstants.USER_PRIVACY_PAGE_PATH,()=>{
+            logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转成功')
+          },(error:BusinessError)=>{
+            logger.error(CommonConstants.RUN_FAST_XM_DB_TAG,'跳转失败' + error)
           })
         })
 

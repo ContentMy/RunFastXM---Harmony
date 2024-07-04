@@ -11,6 +11,7 @@ import { CommonConstants } from '../../common/constants/CommonConstants'
 @Preview
 struct TargetCreate {
   @State targetImgResource:Resource = $r('app.media.ui_icon_sleep')
+  @State targetId:number = 0
   @State targetTitleValue:string = ''
   @State targetContentValue:string = ''
   @State targetStatusString:string = ''
@@ -34,6 +35,7 @@ struct TargetCreate {
     if (params) {
       this.isCreate = false
       const data:TargetData = params.data as TargetData; // 获取data属性的值
+      this.targetId = data.id
       this.targetTitleValue = data.targetTitle
       this.targetContentValue = data.targetContent
       this.targetStartTime = data.targetStartTime
@@ -273,6 +275,7 @@ struct TargetCreate {
                 router.back()
               });
             }else {
+              this.mTargetData.id = this.targetId
               this.TargetTable.updateData(this.mTargetData, (id: number) => {
                 logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,'修改目标更新成功'+JSON.stringify(this.mTargetData))
                 PageEventBus.getInstance().publish('refreshTargetComp');

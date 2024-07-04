@@ -167,7 +167,7 @@ export struct TargetComp{
                   //TODO：需要处理在左滑状态下，如果切换到其他页面，左滑状态无法结束的问题
                 }
               })
-            }, (item:string) => item)
+            })//这里暂时使用默认的处理方式，如果自己实现会导致刷新有问题
           }.width('100%').height('100%').scrollBar(BarState.Off)
           /*这部分是没有列表数据时的默认占位内容*/
           Text($r('app.string.target_default_desc'))

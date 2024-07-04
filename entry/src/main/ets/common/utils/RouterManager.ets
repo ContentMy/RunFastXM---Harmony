@@ -33,7 +33,7 @@ class RouterManager{
   }
 
   replacePage(pageUrl:string,callback: Function,errorCallback:Function){
-    router.pushUrl({
+    router.replaceUrl({
       url: pageUrl // 目标url
     }, router.RouterMode.Standard, (err) => {
       if (err) {
@@ -47,7 +47,7 @@ class RouterManager{
   }
 
   replacePageWithParams(pageUrl:string,pageParams:object,callback: Function,errorCallback:Function){
-    router.pushUrl({
+    router.replaceUrl({
       url: pageUrl,// 目标url
       params: {
         data:pageParams//这个key，目前是统一处理了value，后续优化可以将key值也交给外层来处理

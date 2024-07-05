@@ -8,13 +8,15 @@ import MemorandumImgData from '../data/MemorandumImgData';
 import MemorandumImgTable from './MemorandumImgTable';
 
 export default class MemorandumTable {
-  private static instance: MemorandumTable;
+  private static instance: MemorandumTable | null = null;
   private memorandumTable: AppDatabase = new AppDatabase(
     CommonConstants.MEMORANDUM_TABLE.tableName,
     CommonConstants.MEMORANDUM_TABLE.sqlCreate,
     CommonConstants.MEMORANDUM_TABLE.columns
   );
-  private memorandumImgTable: MemorandumImgTable  = MemorandumImgTable.getInstance(()=>{})
+  private memorandumImgTable: MemorandumImgTable  = MemorandumImgTable.getInstance(()=>{
+    logger.info(CommonConstants.RUN_FAST_XM_DB_TAG,'MemorandumImgTable initialized')
+  })
 
   private constructor(callback: Function = () => {}) {
     this.memorandumTable.getRdbStore(() => {
@@ -26,8 +28,6 @@ export default class MemorandumTable {
   public static getInstance(callback: Function = () => {}): MemorandumTable {
     if (!MemorandumTable.instance) {
       MemorandumTable.instance = new MemorandumTable(callback);
-    } else {
-      callback();
     }
     return MemorandumTable.instance;
   }

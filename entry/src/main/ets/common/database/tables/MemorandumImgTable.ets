@@ -4,24 +4,17 @@ import AppDatabase from '../AppDatabase';
 import MemorandumImgData from '../data/MemorandumImgData';
 
 export default class MemorandumImgTable {
-  private static instance: MemorandumImgTable;
-  private memorandumImgTable: AppDatabase;
+  private static instance: MemorandumImgTable | null = null;
+  private memorandumImgTable: AppDatabase = new AppDatabase(CommonConstants.MEMORANDUM_IMG_TABLE.tableName, CommonConstants.MEMORANDUM_IMG_TABLE.sqlCreate, CommonConstants.MEMORANDUM_IMG_TABLE.columns);
+
 
   private constructor(callback: Function = () => {}) {
-    this.memorandumImgTable = AppDatabase.getInstance(
-      CommonConstants.MEMORANDUM_IMG_TABLE.tableName,
-      CommonConstants.MEMORANDUM_IMG_TABLE.sqlCreate,
-      CommonConstants.MEMORANDUM_IMG_TABLE.columns
-    );
-
     this.memorandumImgTable.getRdbStore(callback);
   }
 
   public static getInstance(callback: Function = () => {}): MemorandumImgTable {
     if (!MemorandumImgTable.instance) {
       MemorandumImgTable.instance = new MemorandumImgTable(callback);
-    } else {
-      callback();
     }
     return MemorandumImgTable.instance;
   }

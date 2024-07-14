@@ -9,6 +9,8 @@ import reminderAgentManager from '@ohos.reminderAgentManager';
 import { BusinessError } from '@kit.BasicServicesKit'
 import { notificationManager } from '@kit.NotificationKit'
 import {routerManager} from '../common/utils/RouterManager'
+import systemDateTime from '@ohos.systemDateTime'
+import { PageEventBus } from '../common/utils/PageEventBus'
 
 @Component
 @Preview
@@ -29,6 +31,15 @@ export struct RemindComp{
   })
 
   aboutToAppear(){
+    PageEventBus.getInstance().subscribe('refreshRemindComp', this.resetData.bind(this));//这里是绑定消息通知，在完成列表更改状态后通知到提醒列表进行数据更新以及通知的发送
+    this.refreshPage()//这个是初次进入页面时读取数据库数据进行展示
+  }
+
+  aboutToDisappear(){
+    PageEventBus.getInstance().unsubscribe('refreshRemindComp', this.resetData.bind(this));
+  }
+
+  refreshPage(){
     this.RemindTable.getRdbStore(() => {
       this.RemindTable.queryAllInProgressRemind(0, (result: RemindData[]) => {
         this.mList = result;
@@ -36,8 +47,17 @@ export struct RemindComp{
     });
   }
 
-  aboutToDisappear(){
-
+  //接收到完成列表的重新提醒消息和数据，然后进行展示以及提醒的开启
+  resetData(remindData?:RemindData){
+    if (remindData != null) {
+      this.mList.push(remindData)//数据加入当前页面的缓存
+      logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`传递过来的数据是有数据的：${JSON.stringify(remindData)}`)
+      logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`加入页面缓存后的数据：${JSON.stringify(this.mList)}`)
+      //TODO：这里后续在入库时，开启通知
+      // this.enableNotification(remindData,this.mList.indexOf(remindData))
+    }else {
+      logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`传递过来的数据为空`)
+    }
   }
 
   /**
@@ -53,8 +73,6 @@ export struct RemindComp{
       logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`入库后的数据：${JSON.stringify(remindData)}`)
       //TODO：这里后续在入库时，开启通知
       this.enableNotification(remindData,this.mList.indexOf(remindData))
-      //TODO: 这里同步也要开始计算结束时间的状态切换
-
     });
   }
 
@@ -63,6 +81,8 @@ export struct RemindComp{
       await notificationManager.requestEnableNotification();
       logger.info(CommonConstants.RUN_FAST_XM_DB_TAG, `enableNotification success`);
       this.setReminder(remindData,index)
+      //TODO: 这里同步也要开始计算结束时间的状态切换 方案一：直接获取到提醒结束的回调，对状态进行修改 方案二：启动延时策略，在延时结束后对状态进行修改以及初始化逻辑中增加对于提醒列表的已完成的遍历和修改
+      this.changeRemindState(remindData,index)
     } catch (err) {
       logger.info(CommonConstants.RUN_FAST_XM_DB_TAG, `enableNotification err ${JSON.stringify(err)}`);
     }
@@ -223,5 +243,17 @@ export struct RemindComp{
     }.width('100%')//宽度占满屏幕
     .height('100%')
     .padding({left:10,right:10})
+  }
+
+
+  changeRemindState(remindData:RemindData,index:number){
+    setTimeout(()=>{
+      remindData.remindCompleteStatus = true
+      this.RemindTable.updateData(remindData, () => {
+        //数据库更新成功之后，同步缓存中remind数据
+        this.mList.splice(index, 1);
+        logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`同步后的数据：${JSON.stringify(this.mList)}`)
+      });
+    },remindData.remindEndTime - systemDateTime.getTime())
   }
 }

@@ -1,6 +1,9 @@
 import router from '@ohos.router';
 import RemindData from '../../common/database/data/RemindData';
 import RemindTable from '../../common/database/tables/RemindTable';
+import { PageEventBus } from '../../common/utils/PageEventBus';
+import { CommonConstants } from '../../common/constants/CommonConstants';
+import { logger } from '../../common/utils/logger';
 
 @Entry
 @Component
@@ -19,6 +22,42 @@ struct RemindCompleted {
         this.mList = result;
       }, true);
     });
+  }
+
+  @Builder itemEnd(remindData:RemindData,index: number) {
+    // 构建尾端滑出组件
+    Row(){
+      Button('重新提醒',{ type: ButtonType.Normal })
+        .height(80)
+        .width(100)
+        .fontColor($r('app.color.colorWhite'))
+        .fontSize(12)
+        .backgroundColor($r('app.color.colorGreen'))
+        .onClick(() => {
+          //从数据库中删除指定数据
+          remindData.remindCompleteStatus = false
+          this.RemindTable.updateData(remindData, () => {
+            //从缓存删除指定数据项。
+            this.mList.splice(index, 1);
+            //这里发出一个消息给到提醒列表，做数据刷新，以及后续的通知的开启等操作
+            logger.debug(CommonConstants.RUN_FAST_XM_DB_TAG,`传递前的数据展示：${JSON.stringify(remindData)}`)
+            PageEventBus.getInstance().publish('refreshRemindComp',remindData);
+          });
+        })
+      Button('删除',{ type: ButtonType.Normal })
+        .height(80)
+        .width(100)
+        .fontColor($r('app.color.colorWhite'))
+        .fontSize(12)
+        .backgroundColor($r('app.color.colorGray'))
+        .onClick(() => {
+          //从数据库中删除指定数据
+          this.RemindTable.deleteData(remindData, () => {
+            //从缓存删除指定数据项。
+            this.mList.splice(index, 1);
+          });
+        })
+    }
   }
 
   build() {
@@ -63,17 +102,22 @@ struct RemindCompleted {
                   .flexShrink(1)
                   .margin({left:10})
               }
-            }
-            .height(80)
-            .backgroundColor($r('app.color.colorGrayLight'))
-            .borderColor($r('app.color.colorBlack'))
-            .borderWidth(1)
-            .borderRadius(10)
-            .shadow({radius:10,color:$r('app.color.colorGray'),offsetX:5,offsetY:5})
-            .margin({left:20,right:20})
+              .height(80)
+              .backgroundColor($r('app.color.colorGrayLight'))
+              .borderColor($r('app.color.colorBlack'))
+              .borderWidth(1)
+              .borderRadius(10)
+              .shadow({radius:10,color:$r('app.color.colorGray'),offsetX:5,offsetY:5})
+              .margin({left:20,right:20})
+            }.swipeAction({
+              end: {
+                // index为该ListItem在List中的索引值。
+                builder: () => { this.itemEnd(item,index) },
+              }
+            })
 
-          }, (item:string) => item)//TODO：这个第三个参数的具体作用以及含义需要研究一下
-        }.width('100%')
+          })//TODO：这个第三个参数的具体作用以及含义需要研究一下
+        }.width('100%').height('100%')
         /*这部分是没有列表数据时的默认占位内容*/
         Text($r('app.string.remind_completed_default_desc'))
           .fontColor($r('app.color.colorGreen'))
@@ -82,6 +126,6 @@ struct RemindCompleted {
       }
       .width('100%')//宽度占满屏幕
       .height('100%')
-    }
+    }.height('100%')
   }
 }

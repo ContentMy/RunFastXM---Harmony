@@ -1,6 +1,6 @@
 export class PageEventBus {
   private static instance: PageEventBus;
-  private events: Map<string, Array<(data?: undefined) => void>> = new Map();
+  private events: Map<string, Array<(data?: object) => void>> = new Map();
 
   private constructor() {}
 
@@ -11,14 +11,14 @@ export class PageEventBus {
     return PageEventBus.instance;
   }
 
-  public subscribe(event: string, callback: (data?: undefined) => void): void {
+  public subscribe(event: string, callback: (data?: object) => void): void {
     if (!this.events.has(event)) {
       this.events.set(event, []);
     }
     this.events.get(event)?.push(callback);
   }
 
-  public unsubscribe(event: string, callback: (data?: undefined) => void): void {
+  public unsubscribe(event: string, callback: (data?: object) => void): void {
     if (!this.events.has(event)) return;
     const callbacks = this.events.get(event);
     if (callbacks) {
@@ -26,7 +26,7 @@ export class PageEventBus {
     }
   }
 
-  public publish(event: string, data?: undefined): void {
+  public publish(event: string, data?: object): void {
     if (!this.events.has(event)) return;
     const callbacks = this.events.get(event);
     if (callbacks) {
